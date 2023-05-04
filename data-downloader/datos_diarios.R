@@ -39,15 +39,15 @@ for (i in parametros_numericos) {
 
 
 #Selccionamos las variables que nos interesan 
-datos_diarios_interesantes <- datos_diarios_clean %>% select(c(PM2.5, PM10,NO2, O3, SO2, Id, Fecha, Dia.de.la.semana, Estacion))
+datos_diarios_clean <- datos_diarios_clean %>% select(c(PM2.5, PM10,NO2, O3, SO2, Id, Fecha, Dia.de.la.semana, Estacion))
 
 
 #Ahora queremos los datos de una manera sencilla para representarlo en los graficos
-datos_bonitos <- pivot_longer(datos_diarios_interesantes, names_to = "Parametros", values_to = "Valores", cols = c( PM2.5, PM10,NO2, O3, SO2))
+datos_diarios_clean <- pivot_longer(datos_diarios_clean, names_to = "Parametros", values_to = "Valores", cols = c( PM2.5, PM10,NO2, O3, SO2))
 
 
 
-datos_clasificados <- datos_bonitos %>%
+datos_diarios_clean <- datos_diarios_clean %>%
   mutate(
     clasificacion = case_when(
       Parametros == "NO2" & Valores >= 0 & Valores < 40 ~ "Buena",
