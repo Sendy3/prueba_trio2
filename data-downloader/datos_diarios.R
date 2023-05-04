@@ -47,10 +47,32 @@ datos_bonitos <- pivot_longer(datos_diarios_interesantes, names_to = "Parametros
 
 
 
+AQ_index_lvls <- c("Sin Datos", "Buena", "Razonablemente Buena", "Regular",
+                   "Desfavorable", "Muy Desfavorable",
+                   "Extremadamente Desfavorable")
+
+AQ_data <- read.csv("./data/AQ_EU_data.csv") %>% 
+  mutate(
+    AQ_index = case_when(
+      AirPollutant == "PM2.5" ~ cut(Concentration, c(0, 10, 20, 25, 50, 75, 800), labels = F),
+      AirPollutant == "PM10" ~ cut(Concentration, c(0, 20, 40, 50, 100, 150, 1200), labels = F),
+      AirPollutant == "NO2" ~ cut(Concentration, c(0, 40, 90, 120, 230, 340, 1000), labels = F),
+      AirPollutant == "O3" ~ cut(Concentration, c(0, 50, 100, 130, 240, 380, 800), labels = F),
+      AirPollutant == "SO2" ~ cut(Concentration, c(0, 100, 200, 350, 500, 750, 1250), labels = F),
+      TRUE ~ 0)
+  )
 
 
+AQ_index_all_hourly <- AQ_data %>% 
+  group_by(AirQualityStationEoICode, DatetimeBegin, DatetimeEnd, objectid, fecha_carga) %>% 
+  summarise(cause = paste(AirPollutant[which(AQ_index == max(AQ_index))], collapse = ", "),
+            AQ_index = max(AQ_index),
+            AirPollutant = "AQ_index_all"
+  ) %>% 
+  ungroup()
 
-
+AQ_data_clean <- bind_rows(AQ_data, AQ_index_all_hourly) %>% 
+  mutate(AQ_index = factor(AQ_index, labels = AQ_index_lvls, levels = 0:6))
 
 
 
