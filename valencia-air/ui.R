@@ -53,15 +53,15 @@ ui <- dashboardPage(
                           
                           hr(), # crea una linea horizontal, horizontal rule
                           
-                          selectInput("ID_Estacion",
+                          selectInput("ID_Estacion1",
                                       "Selecciona la estación",
                                       unique(datos_diarios$Estacion)),
-                          dateRangeInput("ID_Fecha",
+                          dateRangeInput("ID_Fecha1",
                                          "Selecciona las fechas",
                                          start = min(datos_diarios$Fecha), end = max(datos_diarios$Fecha), min = min(datos_diarios$Fecha),
                                          max = max(datos_diarios$Fecha), format = "yyyy-mm-dd", weekstart = 1,
                                          language = "es", separator = "a"),
-                          selectInput("ID_Calidad",
+                          selectInput("ID_Calidad1",
                                       "Selecciona los parámetros",
                                       names(datos_diarios[6:19]))
                              ),
@@ -73,15 +73,15 @@ ui <- dashboardPage(
                                  
                                  hr(), # crea una linea horizontal, horizontal rule
                                  
-                                 selectInput("ID_Estacion",
+                                 selectInput("ID_Estacion2",
                                              "Selecciona la estación",
                                              unique(datos_diarios$Estacion),multiple = TRUE),
-                                 dateRangeInput("ID_Fecha",
+                                 dateRangeInput("ID_Fecha2",
                                                 "Selecciona las fechas",
                                                 start = min(datos_diarios$Fecha), end = max(datos_diarios$Fecha), min = min(datos_diarios$Fecha),
                                                 max = max(datos_diarios$Fecha), format = "yyyy-mm-dd", weekstart = 1,
                                                 language = "es", separator = "a"),
-                                 selectInput("ID_Calidad",
+                                 selectInput("ID_Calidad2",
                                              "Selecciona los parámetros",
                                              names(datos_diarios[6:19]))
                                ),
@@ -92,15 +92,15 @@ ui <- dashboardPage(
                         
                         hr(), # crea una linea horizontal, horizontal rule
                         
-                        selectInput("ID_Estacion",
+                        selectInput("ID_Estacion3",
                                     "Selecciona la estación",
                                     unique(datos_diarios$Estacion),multiple = TRUE),
-                        dateRangeInput("ID_Fecha",
+                        dateRangeInput("ID_Fecha3",
                                        "Selecciona las fechas",
                                        start = min(datos_diarios$Fecha), end = max(datos_diarios$Fecha), min = min(datos_diarios$Fecha),
                                        max = max(datos_diarios$Fecha), format = "yyyy-mm-dd", weekstart = 1,
                                        language = "es", separator = "a"),
-                        selectInput("ID_Calidad",
+                        selectInput("ID_Calidad3",
                                     "Selecciona los parámetros",
                                     names(datos_diarios[6:19]),multiple = TRUE)
                       ),
