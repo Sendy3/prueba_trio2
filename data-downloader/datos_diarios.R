@@ -3,7 +3,7 @@ library(lubridate)
 library(jsonlite)
 library(tidyverse)
 library(readr)
-
+library(dplyr)
 
 # Descargar los datos y convertirlos en una cadena de texto
 url <- "https://valencia.opendatasoft.com/api/explore/v2.1/catalog/datasets/rvvcca/exports/csv?lang=es&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B"
@@ -47,36 +47,44 @@ datos_bonitos <- pivot_longer(datos_diarios_interesantes, names_to = "Parametros
 
 
 
-AQ_index_lvls <- c("Sin Datos", "Buena", "Razonablemente Buena", "Regular",
-                   "Desfavorable", "Muy Desfavorable",
-                   "Extremadamente Desfavorable")
-
-AQ_data <- read.csv("./data/AQ_EU_data.csv") %>% 
+datos_clasificados <- datos_bonitos %>%
   mutate(
-    AQ_index = case_when(
-      AirPollutant == "PM2.5" ~ cut(Concentration, c(0, 10, 20, 25, 50, 75, 800), labels = F),
-      AirPollutant == "PM10" ~ cut(Concentration, c(0, 20, 40, 50, 100, 150, 1200), labels = F),
-      AirPollutant == "NO2" ~ cut(Concentration, c(0, 40, 90, 120, 230, 340, 1000), labels = F),
-      AirPollutant == "O3" ~ cut(Concentration, c(0, 50, 100, 130, 240, 380, 800), labels = F),
-      AirPollutant == "SO2" ~ cut(Concentration, c(0, 100, 200, 350, 500, 750, 1250), labels = F),
-      TRUE ~ 0)
+    clasificacion = case_when(
+      Parametros == "NO2" & Valores >= 0 & Valores < 40 ~ "Buena",
+      Parametros == "NO2" & Valores >= 40 & Valores < 90 ~ "Razonablemente Buena",
+      Parametros == "NO2" & Valores >= 90 & Valores < 120 ~ "Regular",
+      Parametros == "NO2" & Valores >= 120 & Valores < 230 ~ "Desfavorable",
+      Parametros == "NO2" & Valores >= 230 & Valores < 340 ~ "Muy desfavorable",
+      Parametros == "NO2" & Valores >= 340 & Valores <= 1000 ~ "Extremadamente Desfavorable",
+      
+      Parametros == "O3" & Valores >= 0 & Valores < 50 ~ "Buena",
+      Parametros == "O3" & Valores >= 50 & Valores < 100 ~ "Razonablemente Buena",
+      Parametros == "O3" & Valores >= 100 & Valores < 130 ~ "Regular",
+      Parametros == "O3" & Valores >= 130 & Valores < 240 ~ "Desfavorable",
+      Parametros == "O3" & Valores >= 240 & Valores < 380 ~ "Muy desfavorable",
+      Parametros == "O3" & Valores >= 380 & Valores <= 3800 ~ "Extremadamente Desfavorable",
+      
+      Parametros == "PM2.5" & Valores >= 0 & Valores < 10 ~ "Buena",
+      Parametros == "PM2.5" & Valores >= 10 & Valores < 20 ~ "Razonablemente Buena",
+      Parametros == "PM2.5" & Valores >= 20 & Valores < 25 ~ "Regular",
+      Parametros == "PM2.5" & Valores >= 25 & Valores < 50 ~ "Desfavorable",
+      Parametros == "PM2.5" & Valores >= 50 & Valores < 75 ~ "Muy desfavorable",
+      Parametros == "PM2.5" & Valores >= 75 & Valores <= 800 ~ "Extremadamente Desfavorable",
+      
+      Parametros == "PM10" & Valores >= 0 & Valores < 20 ~ "Buena",
+      Parametros == "PM10" & Valores >= 20 & Valores < 40 ~ "Razonablemente Buena",
+      Parametros == "PM10" & Valores >= 40 & Valores < 50 ~ "Regular",
+      Parametros == "PM10" & Valores >= 50 & Valores < 100 ~ "Desfavorable",
+      Parametros == "PM10" & Valores >= 100 & Valores < 150 ~ "Muy desfavorable",
+      Parametros == "PM10" & Valores >= 150 & Valores <= 1200 ~ "Extremadamente Desfavorable",
+
+      Parametros == "SO2" & Valores >= 0 & Valores < 100 ~ "Buena",
+      Parametros == "SO2" & Valores >= 100 & Valores < 200 ~ "Razonablemente Buena",
+      Parametros == "SO2" & Valores >= 200 & Valores < 350 ~ "Regular",
+      Parametros == "SO2" & Valores >= 350 & Valores < 500 ~ "Desfavorable",
+      Parametros == "SO2" & Valores >= 500 & Valores < 750 ~ "Muy desfavorable",
+      Parametros == "SO2" & Valores >= 750 & Valores <= 1250 ~ "Extremadamente Desfavorable",
+      TRUE ~ NA_character_
+    )
   )
-
-
-AQ_index_all_hourly <- AQ_data %>% 
-  group_by(AirQualityStationEoICode, DatetimeBegin, DatetimeEnd, objectid, fecha_carga) %>% 
-  summarise(cause = paste(AirPollutant[which(AQ_index == max(AQ_index))], collapse = ", "),
-            AQ_index = max(AQ_index),
-            AirPollutant = "AQ_index_all"
-  ) %>% 
-  ungroup()
-
-AQ_data_clean <- bind_rows(AQ_data, AQ_index_all_hourly) %>% 
-  mutate(AQ_index = factor(AQ_index, labels = AQ_index_lvls, levels = 0:6))
-
-
-
-
-
-
 
