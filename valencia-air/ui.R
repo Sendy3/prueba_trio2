@@ -65,7 +65,9 @@ ui <- dashboardPage(
                                       "Selecciona los parámetros",
                                       names(datos_diarios[6:19]))
                              ),
-                        mainPanel())),
+                        mainPanel(
+                          h3("Grafico de calor")
+                        ))),
                     tabPanel("Graficos varias estaciones", 
                              sidebarLayout(
                                sidebarPanel(
@@ -90,7 +92,9 @@ ui <- dashboardPage(
                                  plotOutput("boxplot"), 
                                  h4("Graficos de tarta"),
                                  plotOutput("tartageneral"),
-                                 plotOutput("tarta1parametro")
+                                 plotOutput("tarta1parametro"), 
+                                 h4("Grafico de lineas"), 
+                                 plotOutput("grafico1")
                                ))),
                     tabPanel("Tabla",  sidebarLayout(
                       sidebarPanel(
@@ -110,7 +114,11 @@ ui <- dashboardPage(
                                     "Selecciona los parámetros",
                                     names(datos_diarios[6:19]),multiple = TRUE)
                       ),
-                      mainPanel()))    
+                      mainPanel(
+                        DT::dataTableOutput("tabla"),
+                        h3("Estadisticas para cada variable"), 
+                        verbatimTextOutput("stats")
+                      )))    
                     
                     
                   )

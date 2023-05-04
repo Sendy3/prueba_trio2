@@ -12,19 +12,31 @@ server <- function(input, output) {
     est_contamin
   })
   
-  # Creamos el grafico
   
-  # Función para filtrar los datos
-  datos_filtrados <- reactive({
-    datos_diarios_clean %>% 
-      filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
-             Estacion == input$ID_Estacion)  
-  })
+  # # Creamos el grafico
+  # 
+  # # Función para filtrar los datos
+  # datos_filtrados <- reactive({
+  #   datos_diarios_clean %>% 
+  #     filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
+  #            Estacion %in% input$ID_Estacion2)  
+  # })
+  # 
+  # #Metemos la info de los plots
+  # observeEvent(input$ID_Calidad2, {
+  #   output$grafico1 <- renderPlot({
+  #     gra <- ggplot(datos_filtrados(), aes(x = Fecha, colour = Estacion, group = Estacion)) +
+  #       ylim(0, 100)
+  #     for (calidad in input$ID_Calidad2) {
+  #       gra <- gra + geom_line(aes_string(y = calidad))
+  #     }
+  #     gra
+  #   })
+  # })
   
-  # Función para hacer el gráfico
-  output$grafico1 <- renderPlot({
-    ggplot(datos_filtrados(), aes(x = Fecha, group = 1)) +
-      geom_line(aes(y = datos_filtrados()[[input$ID_Calidad]]))
+  #AÑADIMOS LA TABLA
+  estaciones <- reactive({
+    input$ID_Estacion3 
   })
   
   #Datos para varias estaciones y todos los parametros
@@ -55,6 +67,26 @@ server <- function(input, output) {
   #   pie(x =  datos[["Valores"]], labels = datos[["clasificacion"]], main = "Gráfico de tarta para el parametro seleccionado")
   # })
   # 
+  
+  #Datos filtrados para la pestaña de tabla
+  datos_filtrados3 <- reactive({
+    datos_diarios_clean %>% 
+      filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09", #Fecha >= input$ID_Fecha3[1] & Fecha <= input$ID_Fecha3[2]
+             Estacion == input$ID_Estacion3, Parametros == input$ID_Calidad3)  
+  })
+  
+  
+  #Muestro las 10 primeras variables en Table2
+  output$tabla <- renderDataTable(datos_diarios_clean[datos_diarios_clean$Estacion == estaciones(),])
+  
+  #Mostrar las estadisticas para los datos seleccionados
+  
+  output$stats<- renderPrint({
+    validate(need(input$ID_Estacion3, "Elige una o varias estaciones"))
+    validate(need(input$ID_Calidad3, "Elige uno o varios parametros"))
+    validate(need(input$ID_Fecha3, "Elige una o varias estaciones"))
+    summary(datos_filtrados3())
+  })
   
 
   
