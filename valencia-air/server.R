@@ -54,12 +54,22 @@ server <- function(input, output) {
     
   })
   
-  # # Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
-  # output$tartageneral <- renderPlot({
-  # validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
-  #   #pie(x = datos_filtrados1()[[Valores]], labels = datos_filtrados1()[[Parametros]],  main = "Gráfico de tarta para todos los parametros")
-  #   
-  #   })
+  # Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
+  output$tartageneral <- renderPlot({
+  validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
+    #pie(x = datos_filtrados1()[[Valores]], labels = datos_filtrados1()[[Parametros]],  main = "Gráfico de tarta para todos los parametros")
+  # Basic piechart
+  ggplot(datos_diarios_clean %>%
+           filter(Estacion %in% input$ID_Estacion2) %>%
+           group_by(Clasificacion) %>% 
+           summarise(con=n()) %>% 
+           ungroup()
+           , aes(x="", y=con, fill=Clasificacion)) +
+    geom_bar(stat="identity", width=1, color="white") +
+    coord_polar("y", start=0) +
+      
+    theme_void() # remove background, grid, numeric labels
+    })
 
   # Función para crear el gráfico semanal 
   output$semanal <- renderPlot({
