@@ -85,7 +85,9 @@ ui <- dashboardPage(
                                              "Selecciona los parámetros",
                                              names(datos_diarios[6:19]))
                                ),
-                               mainPanel())),
+                               mainPanel(
+                                 plotOutput("boxplot")
+                               ))),
                     tabPanel("Tabla",  sidebarLayout(
                       sidebarPanel(
                         h4("Elementos de entrada"), #header de tama?o 3 x eso es m?s grande

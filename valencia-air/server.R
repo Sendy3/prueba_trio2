@@ -27,6 +27,21 @@ server <- function(input, output) {
       geom_line(aes(y = datos_filtrados()[[input$ID_Calidad]]))
   })
   
+  #Datos para varias estaciones y todos los parametros
+  datos_filtrados1 <- reactive({
+    datos_diarios_clean %>% 
+      filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09", #Fecha >= input$ID_Fecha2[1] & Fecha <= input$ID_Fecha2[2]
+             Estacion == input$ID_Estacion2)  
+  })
+  
+
+  #Funcion para crear el boxplot
+  output$boxplot <- renderPlot({
+    boxplot(Valores ~ Parametros, data = datos_filtrados1(), xlab = "Parametros", ylab = "Valores")
+    
+  })
+  
+  
   
 
   
