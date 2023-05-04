@@ -18,11 +18,11 @@ path <- "./data/datos_diarios.RData"
 save(datos_diarios, file = path)
 
 datos_diarios_clean <- datos_diarios%>% select(-c("Fecha.baja", "NH3","Ruido", "Humidad.relativa", "Radiacion.solar", 
-                                                   "Direccion.del.viento", "Velocidad.del.viento", "Velocidad.maxima.del.viento",
-                                                   "Precipitacion", "Temperatura"))
+                                                  "Direccion.del.viento", "Velocidad.del.viento", "Velocidad.maxima.del.viento",
+                                                  "Precipitacion", "Temperatura"))
 
 # En el data frame resultante unifica las denominaciones del fabricante `AIRBUS` bajo la denominación `"AIRBUS COMP"`.
- 
+
 columnas <- names(datos_diarios_clean)
 
 for (i in columnas){
@@ -77,7 +77,7 @@ datos_clasificados <- datos_bonitos %>%
       Parametros == "PM10" & Valores >= 50 & Valores < 100 ~ "Desfavorable",
       Parametros == "PM10" & Valores >= 100 & Valores < 150 ~ "Muy desfavorable",
       Parametros == "PM10" & Valores >= 150 & Valores <= 1200 ~ "Extremadamente Desfavorable",
-
+      
       Parametros == "SO2" & Valores >= 0 & Valores < 100 ~ "Buena",
       Parametros == "SO2" & Valores >= 100 & Valores < 200 ~ "Razonablemente Buena",
       Parametros == "SO2" & Valores >= 200 & Valores < 350 ~ "Regular",
