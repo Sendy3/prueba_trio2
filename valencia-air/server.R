@@ -37,17 +37,20 @@ server <- function(input, output) {
 
   #Funcion para crear el boxplot
   output$boxplot <- renderPlot({
+    validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
     boxplot(Valores ~ Parametros, data = datos_filtrados1(), xlab = "Parametros", ylab = "Valores",  main = "Boxplot de cada parametro de las estaciones seleccionadas")
     
   })
   
   # #Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
   # output$tartageneral <- renderPlot({
+  # validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
   #   pie(x = datos_filtrados1()[[Valores]], labels = datos_filtrados1()[[Parametros]],  main = "Gráfico de tarta para todos los parametros")
   # })
   # 
   # #Funcion para crear el grafico de tarta para varias estaciones y 1 parametro
   # output$tarta1parametro <- renderPlot({
+  # validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
   #   datos <- datos_filtrados1() %>% filter(Parametros == input$ID_Calidad2)
   #   pie(x =  datos[["Valores"]], labels = datos[["clasificacion"]], main = "Gráfico de tarta para el parametro seleccionado")
   # })

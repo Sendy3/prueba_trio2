@@ -86,7 +86,9 @@ ui <- dashboardPage(
                                              names(datos_diarios[6:19]))
                                ),
                                mainPanel(
+                                 h4("Grafico boxplot"),
                                  plotOutput("boxplot"), 
+                                 h4("Graficos de tarta"),
                                  plotOutput("tartageneral"),
                                  plotOutput("tarta1parametro")
                                ))),
