@@ -46,7 +46,7 @@ ui <- dashboardPage(
               fluidPage(
                   # Show a plot of the generated distribution
                   tabsetPanel(
-                    tabPanel("Graficos ", 
+                    tabPanel("Graficos", 
                         sidebarLayout(
                         sidebarPanel(
                           h4("Elementos de entrada"), #header de tama?o 3 x eso es m?s grande
@@ -93,6 +93,10 @@ ui <- dashboardPage(
                                  h4("Graficos de tarta"),
                                  plotOutput("tartageneral"),
                                  plotOutput("tarta1parametro"), 
+                                 h4("Grafico semanal"), 
+                                 plotOutput("semanal"),
+                                 h4("Grafico semanal 2"), 
+                                 plotOutput("semanal2"),
                                  h4("Grafico de lineas"), 
                                  plotOutput("grafico1")
                                ))),

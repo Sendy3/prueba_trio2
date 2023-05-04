@@ -13,26 +13,26 @@ server <- function(input, output) {
   })
   
   
-  # # Creamos el grafico
-  # 
-  # # Función para filtrar los datos
-  # datos_filtrados <- reactive({
-  #   datos_diarios_clean %>% 
-  #     filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
-  #            Estacion %in% input$ID_Estacion2)  
-  # })
-  # 
-  # #Metemos la info de los plots
-  # observeEvent(input$ID_Calidad2, {
-  #   output$grafico1 <- renderPlot({
-  #     gra <- ggplot(datos_filtrados(), aes(x = Fecha, colour = Estacion, group = Estacion)) +
-  #       ylim(0, 100)
-  #     for (calidad in input$ID_Calidad2) {
-  #       gra <- gra + geom_line(aes_string(y = calidad))
-  #     }
-  #     gra
-  #   })
-  # })
+  # Creamos el grafico
+
+  # Función para filtrar los datos
+  datos_filtrados <- reactive({
+    datos_diarios %>%
+      filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
+             Estacion %in% input$ID_Estacion2)
+  })
+
+  #Metemos la info de los plots
+  observeEvent(input$ID_Calidad2, {
+    output$grafico1 <- renderPlot({
+      gra <- ggplot(datos_filtrados(), aes(x = Fecha, colour = Estacion, group = Estacion)) +
+        ylim(0, 100)
+      for (calidad in input$ID_Calidad2) {
+        gra <- gra + geom_line(aes_string(y = calidad))
+      }
+      gra
+    })
+  })
   
   #AÑADIMOS LA TABLA
   estaciones <- reactive({
@@ -54,19 +54,58 @@ server <- function(input, output) {
     
   })
   
-  # #Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
+  # # Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
   # output$tartageneral <- renderPlot({
   # validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
-  #   pie(x = datos_filtrados1()[[Valores]], labels = datos_filtrados1()[[Parametros]],  main = "Gráfico de tarta para todos los parametros")
-  # })
-  # 
+  #   #pie(x = datos_filtrados1()[[Valores]], labels = datos_filtrados1()[[Parametros]],  main = "Gráfico de tarta para todos los parametros")
+  #   
+  #   })
+
+  # Función para crear el gráfico semanal 
+  output$semanal <- renderPlot({
+    validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
+    ggplot(datos_diarios_clean %>% 
+             filter(Clasificacion == "Muy Desfavorable"|Clasificacion=="Extremadamente Desfavorable") %>% 
+             mutate(dia_sem = factor(dia_sem, levels = c("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"))) %>% 
+             group_by(dia_sem) %>% 
+             summarise(con=n()) %>% 
+             ungroup(),
+           aes(dia_sem, con, fill=dia_sem))+
+      geom_col()+
+      coord_polar()+
+      theme(legend.position = "none",
+            axis.text.y = element_blank(),
+            axis.text.x = element_text(size=6),
+            axis.ticks = element_blank())+
+      labs(title="Valores desfavorables para todas las estaciones", x="", y="")
+  })
+  
+  # Función para crear el gráfico semanal 2 para cada estacion seleccionada
+  output$semanal2 <- renderPlot({
+    validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
+    ggplot(datos_diarios_clean %>% 
+             filter(Clasificacion == "Muy Desfavorable"|Clasificacion=="Extremadamente Desfavorable") %>% 
+             filter(Estacion %in% input$ID_Estacion2) %>%
+             mutate(dia_sem = factor(dia_sem, levels = c("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"))) %>% 
+             group_by(dia_sem) %>% 
+             summarise(con=n()) %>% 
+             ungroup(),
+           aes(dia_sem, con, fill=dia_sem))+
+      geom_col()+
+      coord_polar()+
+      theme(legend.position = "none",
+            axis.text.y = element_blank(),
+            axis.text.x = element_text(size=6),
+            axis.ticks = element_blank())+
+      labs(title="Valores desfavorables para cada estacion seleccionada", x="", y="")
+  })
   # #Funcion para crear el grafico de tarta para varias estaciones y 1 parametro
   # output$tarta1parametro <- renderPlot({
   # validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
   #   datos <- datos_filtrados1() %>% filter(Parametros == input$ID_Calidad2)
   #   pie(x =  datos[["Valores"]], labels = datos[["clasificacion"]], main = "Gráfico de tarta para el parametro seleccionado")
   # })
-  # 
+
   
   #Datos filtrados para la pestaña de tabla
   datos_filtrados3 <- reactive({
