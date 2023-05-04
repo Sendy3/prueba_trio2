@@ -16,7 +16,7 @@ server <- function(input, output) {
   
   # Función para filtrar los datos
   datos_filtrados <- reactive({
-    datos_diarios %>% 
+    datos_diarios_clean %>% 
       filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
              Estacion == input$ID_Estacion)  
   })
