@@ -15,7 +15,7 @@ datos_diarios <- read.csv2(url, sep = ";")
 path <- "./data/datos_diarios.RData"
 
 # Guardamos los datos 
-save(datos_diarios, file = path)
+#save(datos_diarios, file = path)
 
 datos_diarios_clean <- datos_diarios%>% select(-c("Fecha.baja", "NH3","Ruido", "Humidad.relativa", "Radiacion.solar", 
                                                   "Direccion.del.viento", "Velocidad.del.viento", "Velocidad.maxima.del.viento",
@@ -88,3 +88,5 @@ datos_diarios_clean <- datos_diarios_clean %>%
     )
   )
 
+# Guardamos los datos 
+save(datos_diarios, file = path)
