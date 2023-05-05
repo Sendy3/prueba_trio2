@@ -45,14 +45,21 @@ server <- function(input, output) {
       filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09", #Fecha >= input$ID_Fecha2[1] & Fecha <= input$ID_Fecha2[2]
              Estacion == input$ID_Estacion2)  
   })
-  
 
+  
   #Funcion para crear el boxplot
   output$boxplot <- renderPlot({
     validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
-    boxplot(Valores ~ Parametros, data = datos_filtrados1(), xlab = "Parametros", ylab = "Valores",  main = "Boxplot de cada parametro de las estaciones seleccionadas")
-    
+    ggplot(datos_filtrados1(), 
+           aes(x = Parametros, y = Valores, fill = "red", alpha(0.3))) + 
+      geom_boxplot() + 
+      labs(x = "Parametros", y = "Valores")+ 
+      theme(legend.position = "none")+ 
+      theme_minimal()
   })
+  
+
+  
   
   # Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
   output$tartageneral <- renderPlot({
