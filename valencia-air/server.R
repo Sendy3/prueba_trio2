@@ -65,6 +65,18 @@ server <- function(input, output) {
     ggplotly(gra, tooltip = "text", dynamicTicks = TRUE) %>% 
       layout(showlegend = FALSE) # Ocultar la leyenda de color en plotly
   })
+  
+  #Funcion para crear el histograma con los parametros normalizados
+  output$histograma <- renderPlot({
+    validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
+    ggplot(datos_diarios_clean %>% group_by(Parametros) %>%
+             mutate(Valores_norm = (Valores - min(Valores)) / (max(Valores) - min(Valores))) %>%
+             filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
+                    Estacion %in% input$ID_Estacion2), aes(x = Parametros, y = Valores_norm)) +
+      labs(x = "Parametros", y = "Valores normalizados") + 
+      theme(legend.position = "none") + 
+      theme_minimal() 
+  })
 
   # Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
   output$tartageneral <- renderPlot({
