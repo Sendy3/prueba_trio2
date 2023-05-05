@@ -18,7 +18,7 @@ server <- function(input, output) {
   # Función para filtrar los datos
   datos_filtrados <- reactive({
     datos_diarios %>%
-      filter(Fecha >= input$ID_Fecha3[1] & Fecha <= input$ID_Fecha3[2],
+      filter(Fecha >= input$ID_Fecha2[1] & Fecha <= input$ID_Fecha2[2],
              Estacion %in% input$ID_Estacion2)
   })
 
@@ -46,7 +46,7 @@ server <- function(input, output) {
   #Datos para varias estaciones y todos los parametros
   datos_filtrados1 <- reactive({
     datos_diarios_clean %>% 
-      filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09", #Fecha >= input$ID_Fecha2[1] & Fecha <= input$ID_Fecha2[2]
+      filter(Fecha >= input$ID_Fecha2[1] & Fecha <= input$ID_Fecha2[2],
              Estacion == input$ID_Estacion2)  
   })
 
@@ -85,6 +85,7 @@ server <- function(input, output) {
   # Basic piechart
   ggplot(datos_diarios_clean %>%
            filter(Estacion %in% input$ID_Estacion2) %>%
+           filter(Fecha >= input$ID_Fecha2[1] & Fecha <= input$ID_Fecha2[2]) %>%
            group_by(Clasificacion) %>% 
            summarise(con=n()) %>% 
            ungroup()
@@ -99,6 +100,7 @@ server <- function(input, output) {
   output$semanal <- renderPlot({
     validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
     ggplot(datos_diarios_clean %>% 
+             filter(Fecha >= input$ID_Fecha2[1] & Fecha <= input$ID_Fecha2[2]) %>%
              filter(Clasificacion == "Muy Desfavorable"|Clasificacion=="Extremadamente Desfavorable") %>% 
              mutate(dia_sem = factor(dia_sem, levels = c("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"))) %>% 
              group_by(dia_sem) %>% 
@@ -118,6 +120,7 @@ server <- function(input, output) {
   output$semanal2 <- renderPlot({
     validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
     ggplot(datos_diarios_clean %>% 
+             filter(Fecha >= input$ID_Fecha2[1] & Fecha <= input$ID_Fecha2[2]) %>%
              filter(Clasificacion == "Muy Desfavorable"|Clasificacion=="Extremadamente Desfavorable") %>% 
              mutate(dia_sem = factor(dia_sem, levels = c("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"))) %>% 
              filter(Estacion %in% input$ID_Estacion2) %>%
@@ -144,7 +147,7 @@ server <- function(input, output) {
   #Datos filtrados para la pestaña de tabla
   datos_filtrados3 <- reactive({
     datos_diarios_clean %>% 
-      filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09", #Fecha >= input$ID_Fecha3[1] & Fecha <= input$ID_Fecha3[2]
+      filter(Fecha >= input$ID_Fecha2[1] & Fecha <= input$ID_Fecha2[2], #Fecha >= input$ID_Fecha3[1] & Fecha <= input$ID_Fecha3[2]
              Estacion %in% input$ID_Estacion3, Parametros %in% input$ID_Calidad3)  
   })
   
