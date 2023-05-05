@@ -26,7 +26,9 @@ server <- function(input, output) {
   observeEvent(input$ID_Calidad2, {
     output$grafico1 <- renderPlot({
       gra <- ggplot(datos_filtrados(), aes(x = Fecha, colour = Estacion, group = Estacion)) +
-        ylim(0, 100)
+        ylim(0, 100) +
+        theme(legend.position = "none") + 
+        theme_minimal()
       for (calidad in input$ID_Calidad2) {
         gra <- gra + geom_line(aes_string(y = calidad))
       }
@@ -50,16 +52,13 @@ server <- function(input, output) {
   #Funcion para crear el boxplot
   output$boxplot <- renderPlot({
     validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
-    ggplot(datos_filtrados1(), 
-           aes(x = Parametros, y = Valores, fill = "red", alpha(0.3))) + 
-      geom_boxplot() + 
-      labs(x = "Parametros", y = "Valores")+ 
-      theme(legend.position = "none")+ 
-      theme_minimal()
+    ggplot(datos_filtrados1(), aes(x = Parametros, y = Valores, fill = "blue")) + 
+      geom_boxplot(alpha = 0.5, show.legend = FALSE) + 
+      labs(x = "Parametros", y = "Valores") + 
+      theme(legend.position = "none") + 
+      theme_minimal() + 
+      scale_fill_manual(values = alpha("blue", 0.5))
   })
-  
-
-  
   
   # Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
   output$tartageneral <- renderPlot({
@@ -128,19 +127,36 @@ server <- function(input, output) {
   datos_filtrados3 <- reactive({
     datos_diarios_clean %>% 
       filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09", #Fecha >= input$ID_Fecha3[1] & Fecha <= input$ID_Fecha3[2]
-             Estacion == input$ID_Estacion3, Parametros == input$ID_Calidad3)  
+             Estacion %in% input$ID_Estacion3, Parametros %in% input$ID_Calidad3)  
   })
   
+  #AÑADIMOS LA TABLA
+  estaciones <- reactive({
+    input$ID_Estacion3 
+  })
   
   #Muestro las 10 primeras variables en Table2
-  output$tabla <- renderDataTable(datos_diarios_clean[datos_diarios_clean$Estacion == estaciones(),])
+  output$tabla <- DT::renderDataTable({
+    validate(
+      need(input$ID_Estacion3, "Selecciona la estación que quieras ver"),
+      need(input$ID_Calidad3, "Selecciona el parametro de calidad de aire")
+    )
+    DT::datatable(
+      datos_filtrados3(), # Dataframe a mostrar
+      options = list(scrollX = TRUE), # Opciones de visualización
+      class = "display nowrap compact"
+    )
+  })
+  
   
   #Mostrar las estadisticas para los datos seleccionados
   
   output$stats<- renderPrint({
-    validate(need(input$ID_Estacion3, "Elige una o varias estaciones"))
-    validate(need(input$ID_Calidad3, "Elige uno o varios parametros"))
-    validate(need(input$ID_Fecha3, "Elige una o varias estaciones"))
+    validate(
+      need(input$ID_Estacion3, "Elige una o varias estaciones"),
+      need(input$ID_Calidad3, "Elige uno o varios parametros"),
+      need(input$ID_Fecha3, "Elige una o varias estaciones")
+    )
     summary(datos_filtrados3())
   })
   
@@ -200,4 +216,3 @@ server <- function(input, output) {
   })
   
 }
-

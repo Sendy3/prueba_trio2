@@ -118,11 +118,14 @@ ui <- dashboardPage(
                                     "Selecciona los parámetros",
                                     names(datos_diarios[6:19]),multiple = TRUE)
                       ),
-                      mainPanel(
-                        DT::dataTableOutput("tabla"),
-                        h3("Estadisticas para cada variable"), 
-                        verbatimTextOutput("stats")
-                      )))    
+                    mainPanel(
+                      h3("Tabla interactiva"),
+                      dataTableOutput("tabla"),
+                      hr(),
+                      hr(),
+                      h3("Estadisticas para cada variable"), 
+                      verbatimTextOutput("stats")
+                    )))
                     
                     
                   )

@@ -6,6 +6,7 @@ library(tidyverse)
 library(lubridate)
 library(rgdal)
 library(ggplot2)
+library(DT)
 
 # Cargar los datos de calidad del aire en Valencia
 # air_data <- read.csv("air_data_valencia.csv", header = TRUE)
@@ -28,7 +29,5 @@ pal <- colorFactor(c("green", "blue", "orange", "red", "darkred", "purple", "bla
                               "Extremadamente Desfavorable", "Sin datos"))
 # trafico_rodado <- left_join(accum_trafico_rodado, tramos_trafico, by = "gid")
 
-
-#Añadir la info de los buffers
 
 shinyApp(ui, server)
