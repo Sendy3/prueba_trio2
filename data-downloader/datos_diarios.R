@@ -80,6 +80,8 @@ for (parametro in names(lista)) {
   
 }
 
+# assigning the third column name to a new name
+colnames(datos_diarios_clean)[3] <- "dia_sem"
 
 path <- "./data/datos_diarios_clean.RData"
 # Guardamos los datos 
