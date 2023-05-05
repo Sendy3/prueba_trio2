@@ -87,13 +87,12 @@ server <- function(input, output) {
              group_by(Parametros) %>%
              mutate(Valores_norm = (Valores - min(Valores, na.rm = TRUE)) / (max(Valores, na.rm = TRUE) - min(Valores, na.rm = TRUE))) %>%
              filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
-                    Estacion %in% "Viveros"), aes(x = Parametros, y = Valores_norm)) +
-      geom_bar(stat = "identity") +
+                    Estacion %in% c("Viveros","Valencia centro"))) +
+      geom_bar(aes(x = Parametros, y= Valores_norm), stat = "identity") +
       labs(x = "Parametros", y = "Valores normalizados") + 
       theme(legend.position = "none") + 
-      theme_minimal() 
+      theme_minimal()
   })
-  
   
   # Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
   output$tartageneral <- renderPlot({
