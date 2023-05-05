@@ -95,6 +95,7 @@ server <- function(input, output) {
     validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
     ggplot(datos_diarios_clean %>% 
              filter(Clasificacion == "Muy Desfavorable"|Clasificacion=="Extremadamente Desfavorable") %>% 
+             mutate(dia_sem = factor(dia_sem, levels = c("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"))) %>% 
              filter(Estacion %in% input$ID_Estacion2) %>%
              group_by(dia_sem) %>% 
              summarise(con=n()) %>% 
