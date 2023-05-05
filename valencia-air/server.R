@@ -66,33 +66,19 @@ server <- function(input, output) {
       layout(showlegend = FALSE) # Ocultar la leyenda de color en plotly
   })
   
-  # Datos normalizados
-  datos_normalizados <- reactive({
-    datos_diarios %>% 
-    pivot_longer(names_to = "Parametros", values_to = "Valores", 
-                 cols = c("PM1", "PM2.5", "PM10", "NO", "NO2", "NOx", "O3", "SO2", "CO", "NH3", "C7H8", "C6H6", "C8H10"))%>%
-    group_by(Parametros) %>%
-    mutate(Valores_norm = (Valores - min(Valores, na.rm = TRUE)) / (max(Valores, na.rm = TRUE) - min(Valores, na.rm = TRUE))) %>%
-    filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
-           Estacion %in% "Viveros")
-  })
   
-  
-  #Funcion para crear el histograma con los parametros normalizados
-  output$histograma <- renderPlot({
+  #Funcion para crear el grafico de barras apiladas
+  output$apilados <- renderPlot({
     validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
-    ggplot(datos_diarios %>% 
-             pivot_longer(names_to = "Parametros", values_to = "Valores", 
-                          cols = c("PM1", "PM2.5", "PM10", "NO", "NO2", "NOx", "O3", "SO2", "CO", "NH3", "C7H8", "C6H6", "C8H10"))%>%
-             group_by(Parametros) %>%
-             mutate(Valores_norm = (Valores - min(Valores, na.rm = TRUE)) / (max(Valores, na.rm = TRUE) - min(Valores, na.rm = TRUE))) %>%
-             filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
-                    Estacion %in% c("Viveros","Valencia centro"))) +
-      geom_bar(aes(x = Parametros, y= Valores_norm), stat = "identity") +
-      labs(x = "Parametros", y = "Valores normalizados") + 
-      theme(legend.position = "none") + 
+    ggplot(datos_diarios_clean %>% 
+             filter(Parametros == input$ID_Calidad2, Estacion %in% input$ID_Estacion2), 
+           aes(x = Estacion, y = Valores, fill = Clasificacion)) +
+      geom_bar(stat = "identity") +
+      labs(x = "Estaciones", y = "Valores", fill = "Clasificación") +
       theme_minimal()
   })
+
+
   
   # Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
   output$tartageneral <- renderPlot({
