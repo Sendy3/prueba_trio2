@@ -46,47 +46,41 @@ datos_diarios_clean <- datos_diarios_clean %>% select(c(PM2.5, PM10,NO2, O3, SO2
 datos_diarios_clean <- pivot_longer(datos_diarios_clean, names_to = "Parametros", values_to = "Valores", cols = c( PM2.5, PM10,NO2, O3, SO2))
 
 
+# creamos una columna con el valor Clasificacion inicialmente con todo NA
+datos_diarios_clean <- datos_diarios_clean %>% mutate(Clasificacion = NA)
 
-datos_diarios_clean <- datos_diarios_clean %>%
-  mutate(
-    clasificacion = case_when(
-      Parametros == "NO2" & Valores >= 0 & Valores < 40 ~ "Buena",
-      Parametros == "NO2" & Valores >= 40 & Valores < 90 ~ "Razonablemente Buena",
-      Parametros == "NO2" & Valores >= 90 & Valores < 120 ~ "Regular",
-      Parametros == "NO2" & Valores >= 120 & Valores < 230 ~ "Desfavorable",
-      Parametros == "NO2" & Valores >= 230 & Valores < 340 ~ "Muy desfavorable",
-      Parametros == "NO2" & Valores >= 340 & Valores <= 1000 ~ "Extremadamente Desfavorable",
-      
-      Parametros == "O3" & Valores >= 0 & Valores < 50 ~ "Buena",
-      Parametros == "O3" & Valores >= 50 & Valores < 100 ~ "Razonablemente Buena",
-      Parametros == "O3" & Valores >= 100 & Valores < 130 ~ "Regular",
-      Parametros == "O3" & Valores >= 130 & Valores < 240 ~ "Desfavorable",
-      Parametros == "O3" & Valores >= 240 & Valores < 380 ~ "Muy desfavorable",
-      Parametros == "O3" & Valores >= 380 & Valores <= 3800 ~ "Extremadamente Desfavorable",
-      
-      Parametros == "PM2.5" & Valores >= 0 & Valores < 10 ~ "Buena",
-      Parametros == "PM2.5" & Valores >= 10 & Valores < 20 ~ "Razonablemente Buena",
-      Parametros == "PM2.5" & Valores >= 20 & Valores < 25 ~ "Regular",
-      Parametros == "PM2.5" & Valores >= 25 & Valores < 50 ~ "Desfavorable",
-      Parametros == "PM2.5" & Valores >= 50 & Valores < 75 ~ "Muy desfavorable",
-      Parametros == "PM2.5" & Valores >= 75 & Valores <= 800 ~ "Extremadamente Desfavorable",
-      
-      Parametros == "PM10" & Valores >= 0 & Valores < 20 ~ "Buena",
-      Parametros == "PM10" & Valores >= 20 & Valores < 40 ~ "Razonablemente Buena",
-      Parametros == "PM10" & Valores >= 40 & Valores < 50 ~ "Regular",
-      Parametros == "PM10" & Valores >= 50 & Valores < 100 ~ "Desfavorable",
-      Parametros == "PM10" & Valores >= 100 & Valores < 150 ~ "Muy desfavorable",
-      Parametros == "PM10" & Valores >= 150 & Valores <= 1200 ~ "Extremadamente Desfavorable",
-      
-      Parametros == "SO2" & Valores >= 0 & Valores < 100 ~ "Buena",
-      Parametros == "SO2" & Valores >= 100 & Valores < 200 ~ "Razonablemente Buena",
-      Parametros == "SO2" & Valores >= 200 & Valores < 350 ~ "Regular",
-      Parametros == "SO2" & Valores >= 350 & Valores < 500 ~ "Desfavorable",
-      Parametros == "SO2" & Valores >= 500 & Valores < 750 ~ "Muy desfavorable",
-      Parametros == "SO2" & Valores >= 750 & Valores <= 1250 ~ "Extremadamente Desfavorable",
-      TRUE ~ NA_character_
-    )
-  )
+# creamos una lista con las diferentes clasificaciones
+lista <- list(PM2.5 = c(0, 10, 20, 25, 50, 75, 800),
+              PM10 = c(0, 20, 40, 50, 100, 150, 1200),
+              NO2 = c(0, 40, 90, 120, 230, 340, 1000),
+              O3 = c(0, 50, 100, 130, 240, 380, 800),
+              SO2 = c(0, 100, 200, 350, 500, 750, 1250))
+# creamos un vector con lo que indica cada intervalo de las clasificaciones
+vector2 <- c("Buena", "Razonablemente Buena", "Regular", "Desfavorable", "Muy Desfavorable", "Extremadamente Desfavorable")
 
+# para cada parametro de los nombres de la lista (PM2.5, PM10...)
+for (parametro in names(lista)) {
+  # miramos el vector de valores de ese parametro
+  valor <- lista[[parametro]] 
+  # con mutate editamos el valor de la clasificacion
+  datos_diarios_clean <- datos_diarios_clean %>% 
+    # si el valor de la columna Parametros es igual al parametro que estamos observando en esta iteración
+    # y el valor de la columna Valores es mayor que el valor[1] del vector de valores y menor que el 
+    # valor[2] del vector de valores entonces ponemos la primera clasificación del vector2 (Buena) sino 
+    # lo dejamos igual
+    # seguimos el mismo procedimiento con los diferentes mutate hasta que en el último miramos
+    # si los valores están a NA y en ese caso ponemos la clasificación como "Sin datos"
+    mutate(Clasificacion = ifelse(Parametros == parametro & (Valores >= valor[1] & Valores <= valor[2]), vector2[1], Clasificacion)) %>%
+    mutate(Clasificacion = ifelse(Parametros == parametro & (Valores > valor[2] & Valores <= valor[3]), vector2[2], Clasificacion)) %>%
+    mutate(Clasificacion = ifelse(Parametros == parametro & (Valores > valor[3] & Valores <= valor[4]), vector2[3], Clasificacion)) %>%
+    mutate(Clasificacion = ifelse(Parametros == parametro & (Valores > valor[4] & Valores <= valor[5]), vector2[4], Clasificacion)) %>%
+    mutate(Clasificacion = ifelse(Parametros == parametro & (Valores > valor[5] & Valores <= valor[6]), vector2[5], Clasificacion)) %>%
+    mutate(Clasificacion = ifelse(Parametros == parametro & (Valores > valor[6] & Valores <= valor[7]), vector2[6], Clasificacion)) %>%
+    mutate(Clasificacion = ifelse(Parametros == parametro & is.na(Valores), "Sin datos", Clasificacion))
+  
+}
+
+
+path <- "./data/datos_diarios_clean.RData"
 # Guardamos los datos 
-save(datos_diarios, file = path)
+save(datos_diarios_clean, file = path)
