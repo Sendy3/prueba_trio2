@@ -96,7 +96,6 @@ server <- function(input, output) {
     ggplot(datos_diarios_clean %>% 
              filter(Clasificacion == "Muy Desfavorable"|Clasificacion=="Extremadamente Desfavorable") %>% 
              filter(Estacion %in% input$ID_Estacion2) %>%
-             mutate(dia_sem = factor(dia_sem, levels = c("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"))) %>% 
              group_by(dia_sem) %>% 
              summarise(con=n()) %>% 
              ungroup(),
