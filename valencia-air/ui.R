@@ -90,8 +90,8 @@ ui <- dashboardPage(
                                mainPanel(
                                  h4("Grafico boxplot"),
                                  plotlyOutput("boxplot"), 
-                                 h4("Grafico histograma"),
-                                 plotOutput("histograma"),
+                                 h4("Grafico de barras apiladas"),
+                                 plotOutput("apilados"),
                                  h4("Graficos de tarta"),
                                  plotOutput("tartageneral"),
                                  plotOutput("tarta1parametro"), 
