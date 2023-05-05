@@ -14,7 +14,7 @@ library(ggplot2)
 load("./data/accum_est_contamin.RData")
 load("./data/estaciones2.RData")
 load("./data/datos_diarios.RData")
-
+load("./data/datos_diarios_clean.RData")
 
 est_contamin <- left_join(accum_est_contamin, estaciones2, by = "objectid") %>% 
   nest(data = -fecha_carga) %>% 
