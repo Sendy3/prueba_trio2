@@ -18,22 +18,24 @@ server <- function(input, output) {
   # Función para filtrar los datos
   datos_filtrados <- reactive({
     datos_diarios %>%
-      filter(Fecha >= "2019-02-06" & Fecha <= "2019-02-09",
+      filter(Fecha >= input$ID_Fecha3[1] & Fecha <= input$ID_Fecha3[2],
              Estacion %in% input$ID_Estacion2)
   })
 
   #Metemos la info de los plots
-  observeEvent(input$ID_Calidad2, {
-    output$grafico1 <- renderPlot({
-      gra <- ggplot(datos_filtrados(), aes(x = Fecha, colour = Estacion, group = Estacion)) +
-        ylim(0, 100) +
-        theme(legend.position = "none") + 
-        theme_minimal()
-      for (calidad in input$ID_Calidad2) {
-        gra <- gra + geom_line(aes_string(y = calidad))
-      }
-      gra
-    })
+  output$grafico1 <- renderPlotly({
+    shiny::validate(
+      need(input$ID_Estacion2, "Elige una o varias estaciones"),
+      need(input$ID_Calidad2, "Elige una o varios parametros de calidad del aire")
+    )
+    gra <- ggplot(datos_filtrados(), aes(x = Fecha, colour = Estacion, group = Estacion)) +
+      ylim(0, 100) +
+      theme(legend.position = "none") + 
+      theme_minimal()
+    for (calidad in input$ID_Calidad2) {
+      gra <- gra + geom_line(aes_string(y = calidad))
+    }
+    gra
   })
   
   #AÑADIMOS LA TABLA
@@ -50,16 +52,20 @@ server <- function(input, output) {
 
   
   #Funcion para crear el boxplot
-  output$boxplot <- renderPlot({
+  output$boxplot <- renderPlotly({
     validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))
-    ggplot(datos_filtrados1(), aes(x = Parametros, y = Valores, fill = "blue")) + 
-      geom_boxplot(alpha = 0.5, show.legend = FALSE) + 
+    gra <- ggplot(datos_filtrados1(), aes(x = Parametros, y = Valores, fill = "blue")) + 
+      geom_boxplot(alpha = 0.5) + 
       labs(x = "Parametros", y = "Valores") + 
       theme(legend.position = "none") + 
       theme_minimal() + 
       scale_fill_manual(values = alpha("blue", 0.5))
+    
+    # Convertir ggplot en plotly
+    ggplotly(gra, tooltip = "text", dynamicTicks = TRUE) %>% 
+      layout(showlegend = FALSE) # Ocultar la leyenda de color en plotly
   })
-  
+
   # Funcion para crear el grafico de tarta para varias estaciones y todos los parametros
   output$tartageneral <- renderPlot({
   validate(need(input$ID_Estacion2, "Elige una o varias estaciones"))

@@ -7,6 +7,7 @@ library(lubridate)
 library(rgdal)
 library(ggplot2)
 library(DT)
+library(plotly)
 
 # Cargar los datos de calidad del aire en Valencia
 # air_data <- read.csv("air_data_valencia.csv", header = TRUE)
